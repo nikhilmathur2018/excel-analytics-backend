@@ -5,7 +5,6 @@ const { saveAnalysisSession, getUserAnalysisHistory } = require('../controllers/
 const router = express.Router();
 
 router.post('/', protect, saveAnalysisSession);
-router.get('/', protect, getUserAnalysisHistory); // Corrected line: added a comma between '/' and protect
-
+router.get('/', protect, getUserAnalysisHistory); // This line is correct as is (no comma needed between '/' and protect)
 
 module.exports = router;

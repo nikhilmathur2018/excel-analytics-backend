@@ -1,39 +1,30 @@
-const User=require('../models/User');
-const UploadedFile=require('../models/UploadedFile');
+const User = require('../models/User');
+const UploadedFile = require('../models/UploadedFile'); // Not used in this file, but good to keep if needed later
+const asyncHandler = require('express-async-handler'); // Import asyncHandler
 
-exports.getAllUsers=async(req,res)=>{
-  try{
-    const users=await User.find({}).select('-password');
+exports.getAllUsers = asyncHandler(async (req, res) => { // Wrap with asyncHandler
+    const users = await User.find({}).select('-password');
     res.json(users);
-  } catch(error){
-    res.status(500).json({message: error.message});
-  }
-};
+});
 
-exports.deleteUser=async(req,res)=>{
-  try{
-    const user=await User.findById(req.params.id);
-    if(!user){
-      return res.status(404).json({message:'User not found'});
+exports.deleteUser = asyncHandler(async (req, res) => { // Wrap with asyncHandler
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        res.status(404); // Set status before throwing error for asyncHandler
+        throw new Error('User not found');
     }
     await user.deleteOne();
-    res.json({message: 'User removed'});
-  } catch(error){
-    res.status(500).json({message: error.message});
-  }
-};
+    res.json({ message: 'User removed' });
+});
 
-exports.updateUserRole = async (req, res) => {
+exports.updateUserRole = asyncHandler(async (req, res) => { // Wrap with asyncHandler
     const { role } = req.body;
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        user.role = role;
-        await user.save();
-        res.json({ message: 'User role updated', user });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        res.status(404); // Set status before throwing error for asyncHandler
+        throw new Error('User not found');
     }
-};
+    user.role = role;
+    await user.save();
+    res.json({ message: 'User role updated', user });
+});
